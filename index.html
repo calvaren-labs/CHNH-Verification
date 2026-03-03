@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Council CHNH Verification</title>
+<style>
+:root{
+  --bg:#ffffff;
+  --text:#111;
+  --muted:#777;
+  --border:#e5e5e5;
+  --accent:#000;
+}
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+header{
+  padding:28px 40px;
+  border-bottom:1px solid var(--border);
+}
+h1{
+  font-size:20px;
+  font-weight:600;
+  margin:0;
+}
+.container{
+  padding:40px;
+  max-width:1000px;
+}
+.section{
+  margin-bottom:50px;
+}
+label{
+  font-size:14px;
+  font-weight:500;
+  display:block;
+  margin-bottom:8px;
+}
+select{
+  padding:8px;
+  font-size:14px;
+  border:1px solid var(--border);
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+th, td{
+  padding:10px 6px;
+  border-bottom:1px solid var(--border);
+  font-size:14px;
+}
+th{
+  text-align:left;
+  font-weight:500;
+}
+.toggle{
+  text-align:center;
+}
+input[type="checkbox"]{
+  width:16px;
+  height:16px;
+}
+button{
+  margin-top:30px;
+  padding:10px 18px;
+  border:1px solid var(--accent);
+  background:#fff;
+  cursor:pointer;
+  font-size:14px;
+}
+button:hover{
+  background:#f7f7f7;
+}
+.note{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:12px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Council CHNH Verification</h1>
+</header>
+
+<div class="container">
+
+  <div class="section">
+    <label>Select Member</label>
+    <select id="memberSelect"></select>
+  </div>
+
+  <div class="section">
+    <table id="capTable">
+      <thead>
+        <tr>
+          <th>Capability</th>
+          <th class="toggle">Can Help</th>
+          <th class="toggle">Needs Help</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <button onclick="saveData()">Save</button>
+    <div class="note">
+      Changes are saved locally in this browser for now.
+    </div>
+  </div>
+
+</div>
+
+<script>
+
+const members = [
+  "Aisleigh Mc Gann",
+  "Amanda Sharpe",
+  "Angelina Colombo",
+  "Brett Durand",
+  "Charandeep Kaur",
+  "Dan Coll",
+  "Derek Mogck",
+  "Drew Ward",
+  "Emily Teuben",
+  "Eric Paul",
+  "Jessica Vander Ploeg",
+  "Karissa Boley",
+  "LaTonya Ellis",
+  "Mary Burrelle Gardner",
+  "Maureen Glennon",
+  "Rozenn Heath",
+  "Walt Cain"
+];
+
+const capabilities = [
+  "Financial Management",
+  "Outside Counsel Management",
+  "Vendor Management",
+  "Matter Management Systems",
+  "E-Billing",
+  "Regulatory / Risk Alignment",
+  "Org Design in Regulated Enterprise",
+  "Executive Stakeholder Navigation",
+  "Legal Ops Strategy",
+  "Budgeting",
+  "Technology Implementation",
+  "Data & Analytics",
+  "Compliance",
+  "Cybersecurity Alignment",
+  "Process Optimization",
+  "Change Management",
+  "Global Operations",
+  "IP Operations"
+];
+
+const memberSelect = document.getElementById("memberSelect");
+const tableBody = document.querySelector("#capTable tbody");
+
+members.forEach(m => {
+  const opt = document.createElement("option");
+  opt.value = m;
+  opt.textContent = m;
+  memberSelect.appendChild(opt);
+});
+
+function renderTable() {
+  tableBody.innerHTML = "";
+  capabilities.forEach(cap => {
+    const row = document.createElement("tr");
+
+    const capCell = document.createElement("td");
+    capCell.textContent = cap;
+
+    const canCell = document.createElement("td");
+    canCell.className = "toggle";
+    const canBox = document.createElement("input");
+    canBox.type = "checkbox";
+
+    const needCell = document.createElement("td");
+    needCell.className = "toggle";
+    const needBox = document.createElement("input");
+    needBox.type = "checkbox";
+
+    canCell.appendChild(canBox);
+    needCell.appendChild(needBox);
+
+    row.appendChild(capCell);
+    row.appendChild(canCell);
+    row.appendChild(needCell);
+
+    tableBody.appendChild(row);
+  });
+}
+
+function saveData(){
+  alert("Saved locally (demo version).");
+}
+
+renderTable();
+
+</script>
+
+</body>
+</html>
