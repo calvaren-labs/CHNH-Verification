@@ -115,104 +115,99 @@ button:hover{
 
 </div>
 
-<script>
-
 const members = [
-  "Aisleigh Mc Gann",
-  "Amanda Sharpe",
-  "Angelina Colombo",
-  "Brett Durand",
-  "Charandeep Kaur",
-  "Dan Coll",
-  "Derek Mogck",
-  "Drew Ward",
-  "Emily Teuben",
-  "Eric Paul",
-  "Jessica Vander Ploeg",
-  "Karissa Boley",
-  "LaTonya Ellis",
-  "Mary Burrelle Gardner",
-  "Maureen Glennon",
-  "Rozenn Heath",
-  "Walt Cain"
+"Aisleigh Mc Gann",
+"Amanda Sharpe",
+"Angelina Colombo",
+"Brett Durand",
+"Charandeep Kaur",
+"Dan Coll",
+"Derek Mogck",
+"Drew Ward",
+"Emily Teuben",
+"Eric Paul",
+"Jessica Vander Ploeg",
+"Karissa Boley",
+"LaTonya Ellis",
+"Mary Burrelle Gardner",
+"Maureen Glennon",
+"Rozenn Heath",
+"Walt Cain"
 ];
 
 const capabilities = [
-  "Financial Management",
-  "Outside Counsel Management",
-  "Vendor Management",
-  "Matter Management Systems",
-  "E-Billing",
-  "Regulatory / Risk Alignment",
-  "Org Design in Regulated Enterprise",
-  "Executive Stakeholder Navigation",
-  "Legal Ops Strategy",
-  "Budgeting",
-  "Technology Implementation",
-  "Data & Analytics",
-  "Compliance",
-  "Cybersecurity Alignment",
-  "Process Optimization",
-  "Change Management",
-  "Global Operations",
-  "IP Operations"
+"Financial Management",
+"Outside Counsel Management",
+"Vendor Management",
+"Matter Management Systems",
+"E-Billing",
+"Regulatory / Risk Alignment",
+"Org Design in Regulated Enterprise",
+"Executive Stakeholder Navigation",
+"Legal Ops Strategy",
+"Budgeting",
+"Technology Implementation",
+"Data & Analytics",
+"Compliance",
+"Cybersecurity Alignment",
+"Process Optimization",
+"Change Management",
+"Global Operations",
+"IP Operations"
 ];
 
 const memberSelect = document.getElementById("memberSelect");
 const tableBody = document.querySelector("#capTable tbody");
 
-members.forEach(m => {
-  const opt = document.createElement("option");
-  opt.value = m;
-  opt.textContent = m;
-  memberSelect.appendChild(opt);
+members.forEach(member=>{
+  const option=document.createElement("option");
+  option.value=member;
+  option.textContent=member;
+  memberSelect.appendChild(option);
 });
 
-function renderTable() {
-  tableBody.innerHTML = "";
-  capabilities.forEach(cap => {
-    const row = document.createElement("tr");
+capabilities.forEach(cap=>{
+  const row=document.createElement("tr");
 
-    const capCell = document.createElement("td");
-    capCell.textContent = cap;
+  const capCell=document.createElement("td");
+  capCell.textContent=cap;
 
-    const canCell = document.createElement("td");
-    canCell.className = "toggle";
-    const canBox = document.createElement("input");
-    canBox.type = "checkbox";
+  const canCell=document.createElement("td");
+  canCell.className="toggle";
+  const canBox=document.createElement("input");
+  canBox.type="checkbox";
 
-    const needCell = document.createElement("td");
-    needCell.className = "toggle";
-    const needBox = document.createElement("input");
-    needBox.type = "checkbox";
+  const needCell=document.createElement("td");
+  needCell.className="toggle";
+  const needBox=document.createElement("input");
+  needBox.type="checkbox";
 
-    canCell.appendChild(canBox);
-    needCell.appendChild(needBox);
+  canCell.appendChild(canBox);
+  needCell.appendChild(needBox);
 
-    row.appendChild(capCell);
-    row.appendChild(canCell);
-    row.appendChild(needCell);
+  row.appendChild(capCell);
+  row.appendChild(canCell);
+  row.appendChild(needCell);
 
-    tableBody.appendChild(row);
-  });
-}
+  tableBody.appendChild(row);
+});
 
 function saveData(){
-  const member = document.getElementById("memberSelect").value;
-  const rows = document.querySelectorAll("#capTable tbody tr");
+  const member=memberSelect.value;
+  const rows=document.querySelectorAll("#capTable tbody tr");
 
-  rows.forEach(row => {
-    const capability = row.children[0].textContent;
-    const canHelp = row.children[1].querySelector("input").checked ? 1 : 0;
-    const needsHelp = row.children[2].querySelector("input").checked ? 1 : 0;
+  rows.forEach(row=>{
+    const capability=row.children[0].textContent;
+    const canHelp=row.children[1].querySelector("input").checked?1:0;
+    const needsHelp=row.children[2].querySelector("input").checked?1:0;
 
-    fetch("https://script.google.com/macros/s/AKfycbyueJX8tesc0YNm40MPzrP9gEqZLCoUDxDOnlId0a3GVZQmE38jnmR7PPPQPNLvqcM/exec", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        Member: member,
-        [capability + " Can Help"]: canHelp,
-        [capability + " Needs Help"]: needsHelp
+    fetch("https://script.google.com/macros/s/AKfycbyueJX8tesc0YNm40MPzrP9gEqZLCoUDxDOnlId0a3GVZQmE38jnmR7PPPQPNLvqcM/exec",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({
+        Member:member,
+        [capability+" Can Help"]:canHelp,
+        [capability+" Needs Help"]:needsHelp
       })
     });
   });
