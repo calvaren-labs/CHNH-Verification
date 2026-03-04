@@ -198,12 +198,24 @@ function renderTable() {
 }
 
 function saveData(){
-  alert("Saved locally (demo version).");
+  const member = document.getElementById("memberSelect").value;
+  const rows = document.querySelectorAll("#capTable tbody tr");
+
+  rows.forEach(row => {
+    const capability = row.children[0].textContent;
+    const canHelp = row.children[1].querySelector("input").checked ? 1 : 0;
+    const needsHelp = row.children[2].querySelector("input").checked ? 1 : 0;
+
+    fetch("https://script.google.com/macros/s/AKfycbyueJX8tesc0YNm40MPzrP9gEqZLCoUDxDOnlId0a3GVZQmE38jnmR7PPPQPNLvqcM/exec", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        Member: member,
+        [capability + " Can Help"]: canHelp,
+        [capability + " Needs Help"]: needsHelp
+      })
+    });
+  });
+
+  alert("Saved to central sheet.");
 }
-
-renderTable();
-
-</script>
-
-</body>
-</html>
