@@ -168,28 +168,18 @@ const members = [
 
 
 
-const capabilities = [
+let capabilities = [];
 
-"Financial Management",
-"Outside Counsel Management",
-"Vendor Management",
-"Matter Management Systems",
-"E-Billing",
-"Regulatory / Risk Alignment",
-"Org Design in Regulated Enterprise",
-"Executive Stakeholder Navigation",
-"Legal Ops Strategy",
-"Budgeting",
-"Technology Implementation",
-"Data & Analytics",
-"Compliance",
-"Cybersecurity Alignment",
-"Process Optimization",
-"Change Management",
-"Global Operations",
-"IP Operations"
+async function loadCapabilities() {
 
-];
+  const res = await fetch(
+    "https://script.google.com/macros/s/AKfycbwSb3cULP_V6US6VMPNUAzpE9Yj2oeXo9C3yBF-1LT6F_P4XH1lx-k0JUPxAuK5ugaj/exec?action=capabilities"
+  );
+
+  capabilities = await res.json();
+
+  loadCapabilities();
+}
 
 
 
