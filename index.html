@@ -178,8 +178,11 @@ async function loadCapabilities() {
 
   capabilities = await res.json();
 
-  loadCapabilities();
+  renderTable();
+
 }
+
+loadCapabilities();
 
 
 
