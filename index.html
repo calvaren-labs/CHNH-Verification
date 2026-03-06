@@ -192,10 +192,11 @@ button:hover {
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzyxeDKi1b6vDTTi07iD25sEaMZewEy05XSs7enu1XnDUSh4qzoO0C7CDzHz2GJsDqWkg/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxgENFHMxYrWFxbV6TTSVrUA_cD9MNv-VO9XuT6WvkhUpTdvE8ZRlXSFr_pPI44K2GXvw/exec";
 
 let capabilities = [];
 let members = [];
+let hasUnsavedChanges = false;
 
 const memberSelect = document.getElementById("memberSelect");
 const tableBody = document.querySelector("#capTable tbody");
@@ -220,12 +221,43 @@ async function loadData() {
 
     renderTable();
     renderMemberList();
+    await loadMemberData(memberSelect.value);
     status.textContent = "";
   } catch (err) {
     status.textContent = "Error loading data. Please refresh.";
     console.error(err);
   }
 }
+
+async function loadMemberData(member) {
+  status.textContent = "Loading selections...";
+  try {
+    const res = await fetch(`${API_URL}?action=getMember&member=${encodeURIComponent(member)}`);
+    const data = await res.json();
+    const rows = document.querySelectorAll("#capTable tbody tr");
+    rows.forEach(row => {
+      const cap = row.children[0].textContent;
+      row.children[1].querySelector("input").checked = data[cap + " - Can"] === 1;
+      row.children[2].querySelector("input").checked = data[cap + " - Need"] === 1;
+    });
+    hasUnsavedChanges = false;
+    status.textContent = "";
+  } catch (err) {
+    status.textContent = "Could not load selections.";
+    console.error(err);
+  }
+}
+
+memberSelect.addEventListener("change", async () => {
+  if (hasUnsavedChanges) {
+    if (!confirm("You have unsaved changes. Switch members anyway?")) {
+      memberSelect.value = memberSelect.dataset.last;
+      return;
+    }
+  }
+  memberSelect.dataset.last = memberSelect.value;
+  await loadMemberData(memberSelect.value);
+});
 
 function renderTable() {
   tableBody.innerHTML = "";
@@ -239,11 +271,13 @@ function renderTable() {
     canCell.className = "toggle";
     const canBox = document.createElement("input");
     canBox.type = "checkbox";
+    canBox.addEventListener("change", () => { hasUnsavedChanges = true; });
 
     const needCell = document.createElement("td");
     needCell.className = "toggle";
     const needBox = document.createElement("input");
     needBox.type = "checkbox";
+    needBox.addEventListener("change", () => { hasUnsavedChanges = true; });
 
     canCell.appendChild(canBox);
     needCell.appendChild(needBox);
@@ -272,6 +306,7 @@ async function saveData() {
     const res = await fetch(url);
     const result = await res.json();
     if (result.status === "success") {
+      hasUnsavedChanges = false;
       status.textContent = `✓ Saved for ${result.member}`;
     } else {
       status.textContent = `Error: ${result.message}`;
@@ -311,9 +346,13 @@ function renderMemberList() {
   });
 }
 
+function toTitleCase(str) {
+  return str.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+}
+
 async function addMember() {
   const input = document.getElementById("newMemberInput");
-  const name = input.value.trim();
+  const name = toTitleCase(input.value.trim());
   const adminStatus = document.getElementById("adminStatus");
   if (!name) return;
 
@@ -368,6 +407,13 @@ function refreshMemberDropdown() {
     memberSelect.appendChild(option);
   });
 }
+
+window.addEventListener("beforeunload", e => {
+  if (hasUnsavedChanges) {
+    e.preventDefault();
+    e.returnValue = "";
+  }
+});
 
 loadData();
 </script>
