@@ -80,10 +80,75 @@ button:hover {
   color: var(--muted);
   margin-top: 12px;
 }
-#status {
-  margin-top: 12px;
+.admin-toggle {
   font-size: 13px;
   color: var(--muted);
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  text-decoration: underline;
+}
+.admin-toggle:hover {
+  color: var(--text);
+  background: none;
+  border: none;
+}
+.admin-section {
+  display: none;
+  margin-top: 50px;
+  padding-top: 30px;
+  border-top: 1px solid var(--border);
+}
+.admin-section.visible {
+  display: block;
+}
+.admin-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+.add-member-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.add-member-row input {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid var(--border);
+  flex: 1;
+  max-width: 300px;
+}
+.member-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.member-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  max-width: 400px;
+}
+.remove-btn {
+  margin: 0;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: #c00;
+  border-color: #c00;
+}
+.remove-btn:hover {
+  background: #fff0f0;
+}
+.admin-status {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 10px;
 }
 </style>
 </head>
@@ -111,10 +176,23 @@ button:hover {
     <div id="status"></div>
     <div class="note">Saves directly to the Council shared sheet.</div>
   </div>
+
+  <div class="section">
+    <button class="admin-toggle" onclick="toggleAdmin()">⚙ Manage Members</button>
+    <div class="admin-section" id="adminSection">
+      <div class="admin-title">Add / Remove Members</div>
+      <div class="add-member-row">
+        <input type="text" id="newMemberInput" placeholder="Full name" />
+        <button onclick="addMember()">Add Member</button>
+      </div>
+      <ul class="member-list" id="memberList"></ul>
+      <div class="admin-status" id="adminStatus"></div>
+    </div>
+  </div>
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwMwSDKRKdG7FAaBwn_-oIEiV1CkOUQzmR769k80tZfG8YdKcXBpxn82BMD0IJWJAUW/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzyxeDKi1b6vDTTi07iD25sEaMZewEy05XSs7enu1XnDUSh4qzoO0C7CDzHz2GJsDqWkg/exec";
 
 let capabilities = [];
 let members = [];
@@ -141,6 +219,7 @@ async function loadData() {
     });
 
     renderTable();
+    renderMemberList();
     status.textContent = "";
   } catch (err) {
     status.textContent = "Error loading data. Please refresh.";
@@ -201,6 +280,83 @@ async function saveData() {
     status.textContent = "Save failed. Please try again.";
     console.error(err);
   }
+}
+
+function toggleAdmin() {
+  document.getElementById("adminSection").classList.toggle("visible");
+}
+
+function renderMemberList() {
+  const list = document.getElementById("memberList");
+  list.innerHTML = "";
+  members.forEach(member => {
+    const li = document.createElement("li");
+    li.textContent = member;
+    const btn = document.createElement("button");
+    btn.textContent = "Remove";
+    btn.className = "remove-btn";
+    btn.onclick = () => removeMember(member);
+    li.appendChild(btn);
+    list.appendChild(li);
+  });
+}
+
+async function addMember() {
+  const input = document.getElementById("newMemberInput");
+  const name = input.value.trim();
+  const adminStatus = document.getElementById("adminStatus");
+  if (!name) return;
+
+  adminStatus.textContent = "Adding...";
+  try {
+    const res = await fetch(`${API_URL}?action=addMember&member=${encodeURIComponent(name)}`);
+    const result = await res.json();
+    if (result.status === "success") {
+      members.push(name);
+      members.sort();
+      input.value = "";
+      refreshMemberDropdown();
+      renderMemberList();
+      adminStatus.textContent = `✓ Added ${name}`;
+    } else {
+      adminStatus.textContent = `Error: ${result.message}`;
+    }
+  } catch (err) {
+    adminStatus.textContent = "Failed to add member.";
+    console.error(err);
+  }
+}
+
+async function removeMember(name) {
+  const adminStatus = document.getElementById("adminStatus");
+  if (!confirm(`Remove ${name} from the list?`)) return;
+
+  adminStatus.textContent = "Removing...";
+  try {
+    const res = await fetch(`${API_URL}?action=removeMember&member=${encodeURIComponent(name)}`);
+    const result = await res.json();
+    if (result.status === "success") {
+      members = members.filter(m => m !== name);
+      refreshMemberDropdown();
+      renderMemberList();
+      adminStatus.textContent = `✓ Removed ${name}`;
+    } else {
+      adminStatus.textContent = `Error: ${result.message}`;
+    }
+  } catch (err) {
+    adminStatus.textContent = "Failed to remove member.";
+    console.error(err);
+  }
+}
+
+function refreshMemberDropdown() {
+  memberSelect.innerHTML = "";
+  members.forEach(member => {
+    const option = document.createElement("option");
+    option.value = member;
+    option.textContent = member;
+    memberSelect.appendChild(option);
+  });
 }
 
 loadData();
