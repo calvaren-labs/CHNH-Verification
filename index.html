@@ -114,52 +114,36 @@ button:hover {
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzsRDbASOsaAxMAXRwAavIdEFbEf-zc2noYBHVkHD80PdgjPZlLwDQ81w9-CYzmgcTl_Q/exec";
-
-const members = [
-  "Aisleigh Mc Gann",
-  "Amanda Sharpe",
-  "Angelina Colombo",
-  "Brett Durand",
-  "Chanrandeep Kaur",
-  "Dan Coll",
-  "Derek Mogck",
-  "Drew Ward",
-  "Emily Teuben",
-  "Eric Paul",
-  "Jessica Vander Ploeg",
-  "Karissa Boley",
-  "LaTonya Ellis",
-  "Lisa Kremer Brown",
-  "Mary Gardner Burrelle",
-  "Mareen Glennon",
-  "Rozenn Heathcote",
-  "Shailesh Mathankar",
-  "Walt Cain"
-];
+const API_URL = "https://script.google.com/macros/s/AKfycbwMwSDKRKdG7FAaBwn_-oIEiV1CkOUQzmR769k80tZfG8YdKcXBpxn82BMD0IJWJAUW/exec";
 
 let capabilities = [];
+let members = [];
 
 const memberSelect = document.getElementById("memberSelect");
 const tableBody = document.querySelector("#capTable tbody");
 const status = document.getElementById("status");
 
-members.forEach(member => {
-  const option = document.createElement("option");
-  option.value = member;
-  option.textContent = member;
-  memberSelect.appendChild(option);
-});
-
-async function loadCapabilities() {
-  status.textContent = "Loading capabilities...";
+async function loadData() {
+  status.textContent = "Loading...";
   try {
-    const res = await fetch(`${API_URL}?action=capabilities`);
-    capabilities = await res.json();
+    const [capRes, memRes] = await Promise.all([
+      fetch(`${API_URL}?action=capabilities`),
+      fetch(`${API_URL}?action=members`)
+    ]);
+    capabilities = await capRes.json();
+    members = await memRes.json();
+
+    members.forEach(member => {
+      const option = document.createElement("option");
+      option.value = member;
+      option.textContent = member;
+      memberSelect.appendChild(option);
+    });
+
     renderTable();
     status.textContent = "";
   } catch (err) {
-    status.textContent = "Error loading capabilities. Please refresh.";
+    status.textContent = "Error loading data. Please refresh.";
     console.error(err);
   }
 }
@@ -219,7 +203,7 @@ async function saveData() {
   }
 }
 
-loadCapabilities();
+loadData();
 </script>
 </body>
 </html>
