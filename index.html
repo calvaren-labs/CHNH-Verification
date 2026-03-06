@@ -283,7 +283,17 @@ async function saveData() {
 }
 
 function toggleAdmin() {
-  document.getElementById("adminSection").classList.toggle("visible");
+  const section = document.getElementById("adminSection");
+  if (section.classList.contains("visible")) {
+    section.classList.remove("visible");
+    return;
+  }
+  const pwd = prompt("Enter admin password:");
+  if (pwd === "Archive@2026") {
+    section.classList.add("visible");
+  } else {
+    alert("Incorrect password.");
+  }
 }
 
 function renderMemberList() {
@@ -329,7 +339,7 @@ async function addMember() {
 
 async function removeMember(name) {
   const adminStatus = document.getElementById("adminStatus");
-  if (!confirm(`Remove ${name} from the list?`)) return;
+  if (!confirm(`⚠️ Warning: This will permanently delete ${name} and all their data from the sheet.\n\nAre you sure you want to continue?`)) return;
 
   adminStatus.textContent = "Removing...";
   try {
