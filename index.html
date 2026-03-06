@@ -2,290 +2,225 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Council CHNH Verification</title> 
-
+<title>Council CHNH Verification</title>
 <style>
-:root{
-  --bg:#ffffff;
-  --text:#111;
-  --muted:#777;
-  --border:#e5e5e5;
-  --accent:#000;
+:root {
+  --bg: #ffffff;
+  --text: #111;
+  --muted: #777;
+  --border: #e5e5e5;
+  --accent: #000;
 }
-
-body{
-  margin:0;
-  font-family: system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
-  background:var(--bg);
-  color:var(--text);
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
 }
-
-header{
-  padding:28px 40px;
-  border-bottom:1px solid var(--border);
+header {
+  padding: 28px 40px;
+  border-bottom: 1px solid var(--border);
 }
-
-h1{
-  font-size:20px;
-  font-weight:600;
-  margin:0;
+h1 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
 }
-
-.container{
-  padding:40px;
-  max-width:1000px;
+.container {
+  padding: 40px;
+  max-width: 1000px;
 }
-
-.section{
-  margin-bottom:50px;
+.section {
+  margin-bottom: 50px;
 }
-
-label{
-  font-size:14px;
-  font-weight:500;
-  display:block;
-  margin-bottom:8px;
+label {
+  font-size: 14px;
+  font-weight: 500;
+  display: block;
+  margin-bottom: 8px;
 }
-
-select{
-  padding:8px;
-  font-size:14px;
-  border:1px solid var(--border);
+select {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid var(--border);
 }
-
-table{
-  width:100%;
-  border-collapse:collapse;
+table {
+  width: 100%;
+  border-collapse: collapse;
 }
-
-th,td{
-  padding:10px 6px;
-  border-bottom:1px solid var(--border);
-  font-size:14px;
+th, td {
+  padding: 10px 6px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
 }
-
-th{
-  text-align:left;
-  font-weight:500;
+th {
+  text-align: left;
+  font-weight: 500;
 }
-
-.toggle{
-  text-align:center;
+.toggle {
+  text-align: center;
 }
-
-input[type="checkbox"]{
-  width:16px;
-  height:16px;
+input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
 }
-
-button{
-  margin-top:30px;
-  padding:10px 18px;
-  border:1px solid var(--accent);
-  background:#fff;
-  cursor:pointer;
-  font-size:14px;
+button {
+  margin-top: 30px;
+  padding: 10px 18px;
+  border: 1px solid var(--accent);
+  background: #fff;
+  cursor: pointer;
+  font-size: 14px;
 }
-
-button:hover{
-  background:#f7f7f7;
+button:hover {
+  background: #f7f7f7;
 }
-
-.note{
-  font-size:12px;
-  color:var(--muted);
-  margin-top:12px;
+.note {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 12px;
 }
-
+#status {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
 </style>
 </head>
-
-
 <body>
-
 <header>
-<h1>Council CHNH Verification</h1>
+  <h1>Council CHNH Verification</h1>
 </header>
-
 <div class="container">
-
-<div class="section">
-<label>Select Member</label>
-<select id="memberSelect"></select>
+  <div class="section">
+    <label>Select Member</label>
+    <select id="memberSelect"></select>
+  </div>
+  <div class="section">
+    <table id="capTable">
+      <thead>
+        <tr>
+          <th>Capability</th>
+          <th class="toggle">Can Help</th>
+          <th class="toggle">Need Help</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <button onclick="saveData()">Save</button>
+    <div id="status"></div>
+    <div class="note">Saves directly to the Council shared sheet.</div>
+  </div>
 </div>
-
-<div class="section">
-
-<table id="capTable">
-
-<thead>
-<tr>
-<th>Capability</th>
-<th class="toggle">Can Help</th>
-<th class="toggle">Needs Help</th>
-</tr>
-</thead>
-
-<tbody></tbody>
-
-</table>
-
-<button onclick="saveData()">Save</button>
-
-<div class="note">
-Changes are saved locally in this browser for now.
-</div>
-
-</div>
-
-</div>
-
-
 
 <script>
+const API_URL = "https://script.google.com/macros/s/AKfycbxxqDk-nZDW4rziRwd7VlU0jy-v4BvWaFt9akTvDkQ3gO_HlWib_xQDSCM2empsMUliEQ/exec";
 
 const members = [
-
-"Aisleigh Mc Gann",
-"Amanda Sharpe",
-"Angelina Colombo",
-"Brett Durand",
-"Charandeep Kaur",
-"Dan Coll",
-"Derek Mogck",
-"Drew Ward",
-"Emily Teuben",
-"Eric Paul",
-"Jessica Vander Ploeg",
-"Karissa Boley",
-"LaTonya Ellis",
-"Mary Burrelle Gardner",
-"Maureen Glennon",
-"Rozenn Heath",
-"Walt Cain"
-
+  "Aisleigh Mc Gann",
+  "Amanda Sharpe",
+  "Angelina Colombo",
+  "Brett Durand",
+  "Charandeep Kaur",
+  "Dan Coll",
+  "Derek Mogck",
+  "Drew Ward",
+  "Emily Teuben",
+  "Eric Paul",
+  "Jessica Vander Ploeg",
+  "Karissa Boley",
+  "LaTonya Ellis",
+  "Mary Burrelle Gardner",
+  "Maureen Glennon",
+  "Rozenn Heath",
+  "Walt Cain"
 ];
-
-
 
 let capabilities = [];
 
+const memberSelect = document.getElementById("memberSelect");
+const tableBody = document.querySelector("#capTable tbody");
+const status = document.getElementById("status");
+
+members.forEach(member => {
+  const option = document.createElement("option");
+  option.value = member;
+  option.textContent = member;
+  memberSelect.appendChild(option);
+});
+
 async function loadCapabilities() {
+  status.textContent = "Loading capabilities...";
+  try {
+    const res = await fetch(`${API_URL}?action=capabilities`);
+    capabilities = await res.json();
+    renderTable();
+    status.textContent = "";
+  } catch (err) {
+    status.textContent = "Error loading capabilities. Please refresh.";
+    console.error(err);
+  }
+}
 
-  const res = await fetch(
-    "https://script.google.com/macros/s/AKfycbwSb3cULP_V6US6VMPNUAzpE9Yj2oeXo9C3yBF-1LT6F_P4XH1lx-k0JUPxAuK5ugaj/exec?action=capabilities"
-  );
+function renderTable() {
+  tableBody.innerHTML = "";
+  capabilities.forEach(cap => {
+    const row = document.createElement("tr");
 
-  capabilities = await res.json();
+    const capCell = document.createElement("td");
+    capCell.textContent = cap;
 
-  renderTable();
+    const canCell = document.createElement("td");
+    canCell.className = "toggle";
+    const canBox = document.createElement("input");
+    canBox.type = "checkbox";
 
+    const needCell = document.createElement("td");
+    needCell.className = "toggle";
+    const needBox = document.createElement("input");
+    needBox.type = "checkbox";
+
+    canCell.appendChild(canBox);
+    needCell.appendChild(needBox);
+    row.appendChild(capCell);
+    row.appendChild(canCell);
+    row.appendChild(needCell);
+    tableBody.appendChild(row);
+  });
+}
+
+async function saveData() {
+  const member = memberSelect.value;
+  const rows = document.querySelectorAll("#capTable tbody tr");
+  const payload = { Member: member };
+
+  rows.forEach(row => {
+    const capability = row.children[0].textContent;
+    payload[capability + " - Can"]  = row.children[1].querySelector("input").checked ? 1 : 0;
+    payload[capability + " - Need"] = row.children[2].querySelector("input").checked ? 1 : 0;
+  });
+
+  status.textContent = "Saving...";
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    const result = await res.json();
+    if (result.status === "success") {
+      status.textContent = `✓ Saved for ${result.member}`;
+    } else {
+      status.textContent = `Error: ${result.message}`;
+    }
+  } catch (err) {
+    status.textContent = "Save failed. Please try again.";
+    console.error(err);
+  }
 }
 
 loadCapabilities();
-
-
-
-const memberSelect = document.getElementById("memberSelect");
-const tableBody = document.querySelector("#capTable tbody");
-
-
-
-members.forEach(member=>{
-
-const option=document.createElement("option");
-option.value=member;
-option.textContent=member;
-
-memberSelect.appendChild(option);
-
-});
-
-
-
-function renderTable(){
-
-tableBody.innerHTML="";
-
-capabilities.forEach(cap=>{
-
-const row=document.createElement("tr");
-
-const capCell=document.createElement("td");
-capCell.textContent=cap;
-
-const canCell=document.createElement("td");
-canCell.className="toggle";
-
-const canBox=document.createElement("input");
-canBox.type="checkbox";
-
-const needCell=document.createElement("td");
-needCell.className="toggle";
-
-const needBox=document.createElement("input");
-needBox.type="checkbox";
-
-canCell.appendChild(canBox);
-needCell.appendChild(needBox);
-
-row.appendChild(capCell);
-row.appendChild(canCell);
-row.appendChild(needCell);
-
-tableBody.appendChild(row);
-
-});
-
-}
-
-
-
-function saveData(){
-
-const member=memberSelect.value;
-
-const rows=document.querySelectorAll("#capTable tbody tr");
-
-
-
-rows.forEach(row=>{
-
-const capability=row.children[0].textContent;
-
-const canHelp=row.children[1].querySelector("input").checked?1:0;
-
-const needsHelp=row.children[2].querySelector("input").checked?1:0;
-
-
-
-fetch("https://script.google.com/macros/s/AKfycbyueJX8tesc0YNm40MPzrP9gEqZLCoUDxDOnlId0a3GVZQmE38jnmR7PPPQPNLvqcM/exec",{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-
-Member:member,
-[capability+" Can Help"]:canHelp,
-[capability+" Needs Help"]:needsHelp
-
-})
-
-});
-
-});
-
-
-
-alert("Saved to central sheet.");
-
-}
-
 </script>
-
 </body>
 </html>
