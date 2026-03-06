@@ -114,7 +114,7 @@ button:hover {
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzn3rcp0Pe9bunphcLhMh8GbVSSfCUfe0ZDHAfE6NUCO9-JILCkVsDOrVulVNQyJ2tNOw/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzsRDbASOsaAxMAXRwAavIdEFbEf-zc2noYBHVkHD80PdgjPZlLwDQ81w9-CYzmgcTl_Q/exec";
 
 const members = [
   "Aisleigh Mc Gann",
@@ -192,7 +192,7 @@ function renderTable() {
 async function saveData() {
   const member = memberSelect.value;
   const rows = document.querySelectorAll("#capTable tbody tr");
-  const payload = { Member: member };
+  const payload = {};
 
   rows.forEach(row => {
     const capability = row.children[0].textContent;
@@ -203,11 +203,8 @@ async function saveData() {
   status.textContent = "Saving...";
 
   try {
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
+    const url = `${API_URL}?action=save&member=${encodeURIComponent(member)}&data=${encodeURIComponent(JSON.stringify(payload))}`;
+    const res = await fetch(url);
     const result = await res.json();
     if (result.status === "success") {
       status.textContent = `✓ Saved for ${result.member}`;
